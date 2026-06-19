@@ -1,7 +1,9 @@
 export class Renderer {
-  constructor() {
-    this.canvas = document.getElementById("game");
-    this.ctx = this.canvas.getContext("2d");
+  render() {
+    const ctx = this.ctx; // ✅
+  }
+}
+    
 
     this.resize();
     window.addEventListener("resize", () => this.resize());
