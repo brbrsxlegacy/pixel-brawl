@@ -1,3 +1,4 @@
+import { Market } from "../world/Market.js";
 import { SlashEffect } from "../entities/SlashEffect.js";
 import { Menu } from "../ui/Menu.js";
 import { HUD } from "../ui/HUD.js";
@@ -13,6 +14,9 @@ export class Game {
     this.input = new Input();
     this.physics = new Physics();
     this.effects = [];
+    this.market = new Market(120, 510);
+    this.message = "";
+    this.messageTimer = 0;
 
     this.player = new Player(300, 100, "#31D6FF");
     this.enemy = new Player(650, 100, "#FF5C8A");
@@ -90,6 +94,24 @@ export class Game {
         for (const effect of this.effects) {
           effect.update();
         }
+
+        if (this.market.isNear(this.player) && this.input.pressed("e")) {
+          const upgraded = this.player.upgradeSword();
+          
+          if (upgraded) {
+            this.message = `KILIC LVL ${this.player.swordLevel}`;
+          } else {
+            this.message = "YETERSIZ COIN";
+          }
+          
+          this.messageTimer = 90;
+        }
+          
+        if (this.messageTimer > 0) {
+          this.messageTimer--;
+        } else {
+          this.message = "";
+        }
         
         this.effects = this.effects.filter(effect => effect.alive);
       }
@@ -98,7 +120,7 @@ export class Game {
     this.hitboxes = this.hitboxes.filter(h => h.active);
   }
 
-  render() {
+ render() {
   this.renderer.render(
     this.player,
     this.enemy,
@@ -106,6 +128,8 @@ export class Game {
     this.camera,
     this.menu,
     this.hud,
-    this.effects
+    this.effects,
+    this.market,
+    this.message
   );
 }
