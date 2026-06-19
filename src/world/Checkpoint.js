@@ -2,9 +2,16 @@ export class Checkpoint {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+
     this.width = 45;
     this.height = 80;
+
     this.active = false;
+    this.glow = 0;
+  }
+
+  update() {
+    this.glow += 0.08;
   }
 
   isNear(player) {
