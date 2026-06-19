@@ -1,3 +1,4 @@
+import { BotAI } from "../ai/BotAI.js";
 import { Checkpoint } from "../world/Checkpoint.js";
 import { Market } from "../world/Market.js";
 import { SlashEffect } from "../entities/SlashEffect.js";
@@ -21,6 +22,7 @@ export class Game {
     this.checkpoint = new Checkpoint(520, 520);
     this.spawnX = this.player.x;
     this.spawnY = this.player.y;
+    this.botAI = new BotAI();
 
     this.player = new Player(300, 100, "#31D6FF");
     this.enemy = new Player(650, 100, "#FF5C8A");
@@ -91,6 +93,18 @@ export class Game {
       );
     }
   }
+    const botAction = this.botAI.update(
+      this.enemy,
+      this.player
+    );
+    
+    if (botAction === "attack") {
+      const botHitbox = this.enemy.attack();
+    
+      if (botHitbox) {
+        this.hitboxes.push(botHitbox);
+      }
+    }
 
     this.physics.update(this.player, this.renderer.canvas.height);
     this.physics.update(this.enemy, this.renderer.canvas.height);
@@ -115,7 +129,22 @@ export class Game {
         for (const effect of this.effects) {
           effect.update();
         }
-
+        if (hitbox.active && hitbox.owner === this.enemy) {
+          if (hitbox.intersects(this.player)) {
+            this.player.damage += hitbox.damage;
+        
+            const dir = this.enemy.direction;
+            const force =
+              hitbox.knockback *
+              (1 + this.player.damage / 100);
+        
+            this.player.vx += dir * force;
+            this.player.vy -= force * 0.45;
+        
+            this.camera.addShake(8);
+            hitbox.active = false;
+          }
+        }
         if (this.market.isNear(this.player) && this.input.pressed("e")) {
           const upgraded = this.player.upgradeSword();
           
