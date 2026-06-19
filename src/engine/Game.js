@@ -211,5 +211,7 @@ this.renderer.render(
   this.effects,
   this.market,
   this.message,
-  this.checkpoint
+  this.checkpoint,
+  this.gameOver,
+  this.winner
 );
