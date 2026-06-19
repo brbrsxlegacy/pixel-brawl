@@ -1,3 +1,5 @@
+import { Menu } from "../ui/Menu.js";
+import { HUD } from "../ui/HUD.js";
 import { Camera } from "./Camera.js";
 import { Renderer } from "./Renderer.js";
 import { Input } from "./Input.js";
@@ -16,6 +18,8 @@ export class Game {
     this.hitboxes = [];
     this.running = false;
     this.camera = new Camera();
+    this.menu = new Menu();
+    this.hud = new HUD();
   }
 
   start() {
@@ -33,6 +37,12 @@ export class Game {
   };
 
   update() {
+    if (this.menu.active) {
+      if (this.input.pressed("enter")) {
+        this.menu.startGame();
+      }
+      return;
+    }
     if (this.input.pressed("a")) this.player.move(-1);
     if (this.input.pressed("d")) this.player.move(1);
     if (this.input.pressed("w") || this.input.pressed(" ")) {
@@ -70,12 +80,13 @@ export class Game {
     this.hitboxes = this.hitboxes.filter(h => h.active);
   }
 
-   render() {
+  render() {
     this.renderer.render(
       this.player,
       this.enemy,
       this.hitboxes,
-      this.camera
-  );
-}
-  
+      this.camera,
+      this.menu,
+      this.hud
+    );
+  }
