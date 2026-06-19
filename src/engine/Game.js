@@ -1,3 +1,4 @@
+import { SlashEffect } from "../entities/SlashEffect.js";
 import { Menu } from "../ui/Menu.js";
 import { HUD } from "../ui/HUD.js";
 import { Camera } from "./Camera.js";
@@ -11,6 +12,7 @@ export class Game {
     this.renderer = new Renderer();
     this.input = new Input();
     this.physics = new Physics();
+    this.effects = [];
 
     this.player = new Player(300, 100, "#31D6FF");
     this.enemy = new Player(650, 100, "#FF5C8A");
@@ -50,9 +52,20 @@ export class Game {
     }
 
     if (this.input.pressed("j")) {
-      const hitbox = this.player.attack();
-      if (hitbox) this.hitboxes.push(hitbox);
+    const hitbox = this.player.attack();
+  
+    if (hitbox) {
+      this.hitboxes.push(hitbox);
+  
+      this.effects.push(
+        new SlashEffect(
+          this.player.x + this.player.width / 2,
+          this.player.y + 22,
+          this.player.direction
+        )
+      );
     }
+  }
 
     this.physics.update(this.player, this.renderer.canvas.height);
     this.physics.update(this.enemy, this.renderer.canvas.height);
@@ -74,6 +87,11 @@ export class Game {
         this.camera.addShake(10);
     
         hitbox.active = false;
+        for (const effect of this.effects) {
+          effect.update();
+        }
+        
+        this.effects = this.effects.filter(effect => effect.alive);
       }
     }
 
@@ -81,12 +99,13 @@ export class Game {
   }
 
   render() {
-    this.renderer.render(
-      this.player,
-      this.enemy,
-      this.hitboxes,
-      this.camera,
-      this.menu,
-      this.hud
-    );
-  }
+  this.renderer.render(
+    this.player,
+    this.enemy,
+    this.hitboxes,
+    this.camera,
+    this.menu,
+    this.hud,
+    this.effects
+  );
+}
