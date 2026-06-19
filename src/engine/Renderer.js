@@ -58,11 +58,27 @@ export class Renderer {
     ctx.fillRect(-2000, 620, 5000, 100);
   }
 
-  drawPlayer(player) {
+   drawPlayer(player) {
     const ctx = this.ctx;
-
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+  
+    if (player.state === "idle") {
+      ctx.fillStyle = "#31D6FF";
+    }
+  
+    if (player.state === "run") {
+      ctx.fillStyle = "#00FF88";
+    }
+  
+    if (player.state === "jump") {
+      ctx.fillStyle = "#FFD54A";
+    }
+  
+    ctx.fillRect(
+      player.x,
+      player.y,
+      player.width,
+      player.height
+    );
   }
 
   drawHitbox(hitbox) {
