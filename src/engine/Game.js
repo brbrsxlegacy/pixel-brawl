@@ -23,6 +23,10 @@ export class Game {
     this.spawnX = this.player.x;
     this.spawnY = this.player.y;
     this.botAI = new BotAI();
+    this.playerSpawn = { x: 300, y: 100 };
+    this.enemySpawn = { x: 650, y: 100 };
+    this.gameOver = false;
+    this.winner = "";
 
     this.player = new Player(300, 100, "#31D6FF");
     this.enemy = new Player(650, 100, "#FF5C8A");
@@ -38,6 +42,8 @@ export class Game {
     this.running = true;
     this.loop();
   }
+
+  
 
   loop = () => {
     if (!this.running) return;
@@ -78,6 +84,14 @@ export class Game {
       this.messageTimer = 60;
     }
 
+    if (this.gameOver) {
+      if (this.input.justPressed("enter")) location.reload();
+      return;
+    }
+
+    this.checkKO(this.player, this.playerSpawn, "BOT");
+    this.checkKO(this.enemy, this.enemySpawn, "PLAYER");
+
     if (this.input.pressed("j")) {
     const hitbox = this.player.attack();
   
@@ -93,6 +107,23 @@ export class Game {
       );
     }
   }
+
+    checkKO(player, spawn, opponentName) {
+      if (player.y > 900 || player.x < -900 || player.x > 1800) {
+        player.stocks--;
+    
+        if (player.stocks <= 0) {
+          this.gameOver = true;
+          this.winner = `${opponentName} WINS`;
+          return;
+        }
+    
+        player.respawn(spawn.x, spawn.y);
+    
+        this.message = `${opponentName} SCORED`;
+        this.messageTimer = 70;
+      }
+    }
     const botAction = this.botAI.update(
       this.enemy,
       this.player
