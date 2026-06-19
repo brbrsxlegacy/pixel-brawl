@@ -1,3 +1,4 @@
+import { Camera } from "./Camera.js";
 import { Renderer } from "./Renderer.js";
 import { Input } from "./Input.js";
 import { Physics } from "./Physics.js";
@@ -14,6 +15,7 @@ export class Game {
 
     this.hitboxes = [];
     this.running = false;
+    this.camera = new Camera();
   }
 
   start() {
@@ -58,7 +60,9 @@ export class Game {
 
         this.enemy.vx += dir * force;
         this.enemy.vy -= force * 0.45;
-
+        
+        this.camera.addShake(10);
+    
         hitbox.active = false;
       }
     }
@@ -66,7 +70,12 @@ export class Game {
     this.hitboxes = this.hitboxes.filter(h => h.active);
   }
 
-  render() {
-    this.renderer.render(this.player, this.enemy, this.hitboxes);
-  }
+   render() {
+    this.renderer.render(
+      this.player,
+      this.enemy,
+      this.hitboxes,
+      this.camera
+  );
 }
+  
