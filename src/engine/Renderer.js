@@ -12,7 +12,7 @@ export class Renderer {
     this.canvas.height = window.innerHeight;
   }
 
-  render(player, enemy, hitboxes, camera, menu, hud, effects, market, message, checkpoint) {
+  render(player, enemy, hitboxes, camera, menu, hud, effects, market, message, checkpoint, gameOver, winner)
     const ctx = this.ctx;
 
     const ctx = this.ctx;
@@ -22,6 +22,9 @@ export class Renderer {
     if (menu.active) {
       this.drawMenu();
       return;
+    }
+    if (this.gameOver) {
+      this.drawGameOver(this.winner);
     }
     
     ctx.save();
