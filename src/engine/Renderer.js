@@ -40,6 +40,25 @@ export class Renderer {
     for (const hitbox of hitboxes) {
       this.drawHitbox(hitbox);
     }
+
+  drawGameOver(winner) {
+    const ctx = this.ctx;
+  
+    ctx.save();
+  
+    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "42px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(winner, ctx.canvas.width / 2, ctx.canvas.height / 2 - 20);
+  
+    ctx.font = "20px monospace";
+    ctx.fillText("ENTER = RESTART", ctx.canvas.width / 2, ctx.canvas.height / 2 + 35);
+  
+    ctx.restore();
+  }
     
     ctx.restore();
     
