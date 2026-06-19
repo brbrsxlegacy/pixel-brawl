@@ -12,7 +12,7 @@ export class Renderer {
     this.canvas.height = window.innerHeight;
   }
 
-  render(player, enemy, hitboxes, camera, menu, hud, effects, market, message) {
+  render(player, enemy, hitboxes, camera, menu, hud, effects, market, message, checkpoint) {
     const ctx = this.ctx;
 
     const ctx = this.ctx;
@@ -77,7 +77,7 @@ export class Renderer {
     ctx.fillStyle = "#3E7A26";
     ctx.fillRect(-2000, 620, 5000, 100);
   }
-  
+  this.drawCheckpoint(checkpoint);
   this.drawMarket(market);
 
    drawPlayer(player) {
@@ -131,6 +131,24 @@ export class Renderer {
     ctx.fillText(message, ctx.canvas.width / 2, 120);
   
     ctx.restore();
+  }
+  drawCheckpoint(checkpoint) {
+    const ctx = this.ctx;
+  
+    ctx.fillStyle = checkpoint.active ? "#FFD54A" : "#777";
+    ctx.fillRect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height);
+  
+    ctx.fillStyle = "#333";
+    ctx.fillRect(checkpoint.x + 15, checkpoint.y + 10, 15, 60);
+  
+    ctx.fillStyle = checkpoint.active ? "#FFF2A0" : "#444";
+    ctx.beginPath();
+    ctx.arc(checkpoint.x + 22, checkpoint.y - 10, 18, 0, Math.PI * 2);
+    ctx.fill();
+  
+    ctx.fillStyle = "#fff";
+    ctx.font = "14px monospace";
+    ctx.fillText("SAVE", checkpoint.x - 2, checkpoint.y - 35);
   }
 
   drawHitbox(hitbox) {
