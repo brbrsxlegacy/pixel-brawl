@@ -12,7 +12,7 @@ export class Renderer {
     this.canvas.height = window.innerHeight;
   }
 
-  render(player, enemy, hitboxes, camera) {
+  render(player, enemy, hitboxes, camera, menu, hud, effects) {
     const ctx = this.ctx;
 
     const ctx = this.ctx;
@@ -30,6 +30,9 @@ export class Renderer {
     this.drawWorld();
     this.drawPlayer(player);
     this.drawPlayer(enemy);
+    for (const effect of effects) {
+      this.drawSlashEffect(effect);
+    }
     
     for (const hitbox of hitboxes) {
       this.drawHitbox(hitbox);
@@ -38,6 +41,23 @@ export class Renderer {
     ctx.restore();
     
     hud.draw(ctx, player, enemy);
+  }
+  drawSlashEffect(effect) {
+    const ctx = this.ctx;
+    const alpha = effect.life / effect.maxLife;
+  
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(effect.x, effect.y);
+    ctx.scale(effect.direction, 1);
+  
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(8, -18, 54, 8);
+  
+    ctx.fillStyle = "#FFD54A";
+    ctx.fillRect(18, -8, 42, 6);
+  
+    ctx.restore();
   }
 
   drawWorld() {
