@@ -1,3 +1,4 @@
+import { Checkpoint } from "../world/Checkpoint.js";
 import { Market } from "../world/Market.js";
 import { SlashEffect } from "../entities/SlashEffect.js";
 import { Menu } from "../ui/Menu.js";
@@ -17,6 +18,9 @@ export class Game {
     this.market = new Market(120, 510);
     this.message = "";
     this.messageTimer = 0;
+    this.checkpoint = new Checkpoint(520, 520);
+    this.spawnX = this.player.x;
+    this.spawnY = this.player.y;
 
     this.player = new Player(300, 100, "#31D6FF");
     this.enemy = new Player(650, 100, "#FF5C8A");
@@ -53,6 +57,23 @@ export class Game {
     if (this.input.pressed("d")) this.player.move(1);
     if (this.input.pressed("w") || this.input.pressed(" ")) {
       this.player.jump();
+    }
+    if (this.checkpoint.isNear(this.player) && this.input.pressed("e")) {
+      this.checkpoint.active = true;
+      this.spawnX = this.checkpoint.x;
+      this.spawnY = this.checkpoint.y - this.player.height;
+    
+      this.message = "CHECKPOINT SAVED";
+      this.messageTimer = 90;
+    }
+    if (this.player.y > 900) {
+      this.player.x = this.spawnX;
+      this.player.y = this.spawnY;
+      this.player.vx = 0;
+      this.player.vy = 0;
+    
+      this.message = "RESPAWN";
+      this.messageTimer = 60;
     }
 
     if (this.input.pressed("j")) {
@@ -120,16 +141,15 @@ export class Game {
     this.hitboxes = this.hitboxes.filter(h => h.active);
   }
 
- render() {
-  this.renderer.render(
-    this.player,
-    this.enemy,
-    this.hitboxes,
-    this.camera,
-    this.menu,
-    this.hud,
-    this.effects,
-    this.market,
-    this.message
-  );
-}
+this.renderer.render(
+  this.player,
+  this.enemy,
+  this.hitboxes,
+  this.camera,
+  this.menu,
+  this.hud,
+  this.effects,
+  this.market,
+  this.message,
+  this.checkpoint
+);
