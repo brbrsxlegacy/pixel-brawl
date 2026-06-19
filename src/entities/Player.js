@@ -22,6 +22,16 @@ export class Player {
     this.color = color;
     this.damage = 0;
     this.attackCooldown = 0;
+    this.state = "idle";
+  }
+    updateAnimationState() {
+    if (!this.onGround) {
+      this.state = "jump";
+    } else if (Math.abs(this.vx) > 0.4) {
+      this.state = "run";
+    } else {
+      this.state = "idle";
+    }
   }
 
   move(dir) {
