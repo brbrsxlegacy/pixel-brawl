@@ -9,6 +9,9 @@ export class Player {
     this.width = 42;
     this.height = 58;
 
+    this.coins = 0;
+    this.swordLevel = 1;
+
     this.vx = 0;
     this.vy = 0;
 
@@ -44,6 +47,18 @@ export class Player {
       this.vy = this.jumpPower;
       this.onGround = false;
     }
+  }
+
+  upgradeSword() {
+    const cost = this.swordLevel * 20;
+  
+    if (this.coins >= cost) {
+      this.coins -= cost;
+      this.swordLevel++;
+      return true;
+    }
+  
+    return false;
   }
 
   attack() {
