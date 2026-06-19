@@ -1,14 +1,18 @@
-import { BotAI } from "../ai/BotAI.js";
-import { Checkpoint } from "../world/Checkpoint.js";
-import { Market } from "../world/Market.js";
-import { SlashEffect } from "../entities/SlashEffect.js";
-import { Menu } from "../ui/Menu.js";
-import { HUD } from "../ui/HUD.js";
-import { Camera } from "./Camera.js";
 import { Renderer } from "./Renderer.js";
 import { Input } from "./Input.js";
 import { Physics } from "./Physics.js";
+import { Camera } from "./Camera.js";
+
 import { Player } from "../entities/Player.js";
+import { SlashEffect } from "../entities/SlashEffect.js";
+
+import { Menu } from "../ui/Menu.js";
+import { HUD } from "../ui/HUD.js";
+
+import { Market } from "../world/Market.js";
+import { Checkpoint } from "../world/Checkpoint.js";
+
+import { BotAI } from "../ai/BotAI.js";
 
 export class Game {
   constructor() {
@@ -20,27 +24,25 @@ export class Game {
     this.player = new Player(300, 100, "#31D6FF");
     this.enemy = new Player(650, 100, "#FF5C8A");
 
-    this.effects = [];
-    this.hitboxes = [];
-
-    this.market = new Market(120, 510);
-    this.checkpoint = new Checkpoint(520, 520);
-    this.botAI = new BotAI();
-
     this.playerSpawn = { x: 300, y: 100 };
     this.enemySpawn = { x: 650, y: 100 };
 
-    this.spawnX = this.player.x;
-    this.spawnY = this.player.y;
+    this.effects = [];
+    this.hitboxes = [];
+
+    this.menu = new Menu();
+    this.hud = new HUD();
+
+    this.market = new Market(120, 510);
+    this.checkpoint = new Checkpoint(520, 520);
+
+    this.botAI = new BotAI();
 
     this.message = "";
     this.messageTimer = 0;
 
     this.gameOver = false;
     this.winner = "";
-
-    this.menu = new Menu();
-    this.hud = new HUD();
 
     this.running = false;
   }
@@ -61,12 +63,16 @@ export class Game {
 
   update() {
     if (this.menu.active) {
-      if (this.input.justPressed("enter")) this.menu.startGame();
+      if (this.input.justPressed("enter")) {
+        this.menu.startGame();
+      }
       return;
     }
 
     if (this.gameOver) {
-      if (this.input.justPressed("enter")) location.reload();
+      if (this.input.justPressed("enter")) {
+        location.reload();
+      }
       return;
     }
 
@@ -74,7 +80,9 @@ export class Game {
 
     if (this.input.pressed("a")) this.player.move(-1);
     if (this.input.pressed("d")) this.player.move(1);
-    if (this.input.pressed("w") || this.input.pressed(" ")) this.player.jump();
+    if (this.input.pressed("w") || this.input.pressed(" ")) {
+      this.player.jump();
+    }
 
     if (this.input.justPressed("j")) {
       const hitbox = this.player.attack();
@@ -96,7 +104,18 @@ export class Game {
 
     if (botAction === "attack") {
       const botHitbox = this.enemy.attack();
-      if (botHitbox) this.hitboxes.push(botHitbox);
+
+      if (botHitbox) {
+        this.hitboxes.push(botHitbox);
+
+        this.effects.push(
+          new SlashEffect(
+            this.enemy.x + this.enemy.width / 2,
+            this.enemy.y + 22,
+            this.enemy.direction
+          )
+        );
+      }
     }
 
     if (this.market.isNear(this.player) && this.input.justPressed("e")) {
@@ -111,8 +130,11 @@ export class Game {
 
     if (this.checkpoint.isNear(this.player) && this.input.justPressed("e")) {
       this.checkpoint.active = true;
-      this.spawnX = this.checkpoint.x;
-      this.spawnY = this.checkpoint.y - this.player.height;
+
+      this.playerSpawn = {
+        x: this.checkpoint.x,
+        y: this.checkpoint.y - this.player.height
+      };
 
       this.message = "CHECKPOINT SAVED";
       this.messageTimer = 90;
@@ -130,45 +152,53 @@ export class Game {
     for (const hitbox of this.hitboxes) {
       hitbox.update();
 
-      if (hitbox.active && hitbox.owner === this.player && hitbox.intersects(this.enemy)) {
-        this.enemy.damage += hitbox.damage;
-
-        const dir = this.player.direction;
-        const force = hitbox.knockback * (1 + this.enemy.damage / 100);
-
-        this.enemy.vx += dir * force;
-        this.enemy.vy -= force * 0.45;
-
-        this.camera.addShake(10);
-        hitbox.active = false;
+      if (
+        hitbox.active &&
+        hitbox.owner === this.player &&
+        hitbox.intersects(this.enemy)
+      ) {
+        this.applyHit(this.enemy, hitbox, this.player.direction, 10);
       }
 
-      if (hitbox.active && hitbox.owner === this.enemy && hitbox.intersects(this.player)) {
-        this.player.damage += hitbox.damage;
-
-        const dir = this.enemy.direction;
-        const force = hitbox.knockback * (1 + this.player.damage / 100);
-
-        this.player.vx += dir * force;
-        this.player.vy -= force * 0.45;
-
-        this.camera.addShake(8);
-        hitbox.active = false;
+      if (
+        hitbox.active &&
+        hitbox.owner === this.enemy &&
+        hitbox.intersects(this.player)
+      ) {
+        this.applyHit(this.player, hitbox, this.enemy.direction, 8);
       }
     }
 
-    this.hitboxes = this.hitboxes.filter(h => h.active);
+    this.hitboxes = this.hitboxes.filter((h) => h.active);
 
-    for (const effect of this.effects) effect.update();
-    this.effects = this.effects.filter(effect => effect.alive);
+    for (const effect of this.effects) {
+      effect.update();
+    }
+
+    this.effects = this.effects.filter((effect) => effect.alive);
 
     this.checkKO(this.player, this.playerSpawn, "BOT");
     this.checkKO(this.enemy, this.enemySpawn, "PLAYER");
 
-    if (this.messageTimer > 0) this.messageTimer--;
-    else this.message = "";
+    if (this.messageTimer > 0) {
+      this.messageTimer--;
+    } else {
+      this.message = "";
+    }
 
     this.camera.follow(this.player, this.enemy, this.renderer.canvas);
+  }
+
+  applyHit(target, hitbox, direction, shakeAmount) {
+    target.damage += hitbox.damage;
+
+    const force = hitbox.knockback * (1 + target.damage / 100);
+
+    target.vx += direction * force;
+    target.vy -= force * 0.45;
+
+    this.camera.addShake(shakeAmount);
+    hitbox.active = false;
   }
 
   checkKO(player, spawn, opponentName) {
