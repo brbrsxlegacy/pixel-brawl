@@ -1,5 +1,8 @@
+import { Hitbox } from "./Hitbox.js";
+import { attacks } from "../combat/attacks.js";
+
 export class Player {
-  constructor(x = 300, y = 100) {
+  constructor(x = 300, y = 100, color = "#31D6FF") {
     this.x = x;
     this.y = y;
 
@@ -15,6 +18,10 @@ export class Player {
 
     this.onGround = false;
     this.direction = 1;
+
+    this.color = color;
+    this.damage = 0;
+    this.attackCooldown = 0;
   }
 
   move(dir) {
@@ -27,5 +34,31 @@ export class Player {
       this.vy = this.jumpPower;
       this.onGround = false;
     }
+  }
+
+  attack() {
+    if (this.attackCooldown > 0) return null;
+
+    this.attackCooldown = 22;
+
+    const atk = attacks.slash1;
+    const hitX =
+      this.direction === 1
+        ? this.x + this.width
+        : this.x - atk.width;
+
+    return new Hitbox(
+      this,
+      hitX,
+      this.y + 14,
+      atk.width,
+      atk.height,
+      atk.damage,
+      atk.knockback
+    );
+  }
+
+  updateCooldowns() {
+    if (this.attackCooldown > 0) this.attackCooldown--;
   }
 }
