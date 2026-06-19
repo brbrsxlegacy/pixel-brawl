@@ -12,7 +12,7 @@ export class Renderer {
     this.canvas.height = window.innerHeight;
   }
 
-  render(player, enemy, hitboxes, camera, menu, hud, effects) {
+  render(player, enemy, hitboxes, camera, menu, hud, effects, market, message) {
     const ctx = this.ctx;
 
     const ctx = this.ctx;
@@ -77,6 +77,8 @@ export class Renderer {
     ctx.fillStyle = "#3E7A26";
     ctx.fillRect(-2000, 620, 5000, 100);
   }
+  
+  this.drawMarket(market);
 
    drawPlayer(player) {
     const ctx = this.ctx;
@@ -100,6 +102,36 @@ export class Renderer {
       player.height
     );
   }
+  drawMarket(market) {
+    const ctx = this.ctx;
+  
+    ctx.fillStyle = "#8B5A2B";
+    ctx.fillRect(market.x, market.y, market.width, market.height);
+  
+    ctx.fillStyle = "#D9A441";
+    ctx.fillRect(market.x + 10, market.y + 20, 70, 15);
+  
+    ctx.fillStyle = "#333";
+    ctx.fillRect(market.x + 35, market.y + 45, 20, 45);
+  
+    ctx.fillStyle = "#fff";
+    ctx.font = "14px monospace";
+    ctx.fillText("SHOP", market.x + 22, market.y - 10);
+  }
+  drawMessage(message) {
+    const ctx = this.ctx;
+  
+    ctx.save();
+    ctx.fillStyle = "#000";
+    ctx.fillRect(ctx.canvas.width / 2 - 160, 90, 320, 45);
+  
+    ctx.fillStyle = "#fff";
+    ctx.font = "20px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(message, ctx.canvas.width / 2, 120);
+  
+    ctx.restore();
+  }
 
   drawHitbox(hitbox) {
     const ctx = this.ctx;
@@ -116,6 +148,7 @@ export class Renderer {
     ctx.fillText(`${Math.floor(enemy.damage)}%`, 30, 40);
   }
 }
+if (message) this.drawMessage(message);
   drawMenu() {
     const ctx = this.ctx;
   
