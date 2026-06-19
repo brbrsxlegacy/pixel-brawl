@@ -10,7 +10,7 @@ export class Renderer {
   resize() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-  }
+  
 
   render(player, enemy, hitboxes, camera, menu, hud, effects, market, message, checkpoint, gameOver, winner) {
     const ctx = this.ctx;
