@@ -15,23 +15,29 @@ export class Renderer {
   render(player, enemy, hitboxes, camera) {
     const ctx = this.ctx;
 
+    const ctx = this.ctx;
+
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+    
+    if (menu.active) {
+      this.drawMenu();
+      return;
+    }
+    
     ctx.save();
-
     camera.apply(ctx);
-
+    
     this.drawWorld();
     this.drawPlayer(player);
     this.drawPlayer(enemy);
-
+    
     for (const hitbox of hitboxes) {
       this.drawHitbox(hitbox);
     }
-
+    
     ctx.restore();
-
-    this.drawHUD(enemy);
+    
+    hud.draw(ctx, player, enemy);
   }
 
   drawWorld() {
@@ -74,3 +80,32 @@ export class Renderer {
     ctx.fillText(`${Math.floor(enemy.damage)}%`, 30, 40);
   }
 }
+  drawMenu() {
+    const ctx = this.ctx;
+  
+    ctx.fillStyle = "#87CEEB";
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  
+    ctx.fillStyle = "#FFD54A";
+    ctx.beginPath();
+    ctx.arc(150, 120, 60, 0, Math.PI * 2);
+    ctx.fill();
+  
+    ctx.fillStyle = "#1b1b1b";
+    ctx.fillRect(
+      this.canvas.width / 2 - 220,
+      this.canvas.height / 2 - 120,
+      440,
+      240
+    );
+  
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "36px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("PIXEL BRAWL", this.canvas.width / 2, this.canvas.height / 2 - 35);
+  
+    ctx.font = "20px monospace";
+    ctx.fillText("ENTER BAS VE OYNA", this.canvas.width / 2, this.canvas.height / 2 + 35);
+  
+    ctx.textAlign = "left";
+  }
