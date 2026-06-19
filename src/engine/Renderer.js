@@ -6,7 +6,7 @@ export class Renderer {
     this.resize();
     window.addEventListener("resize", () => this.resize());
   }
-}
+
   resize() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
@@ -54,12 +54,7 @@ export class Renderer {
     ctx.fill();
 
     ctx.fillStyle = "#1b1b1b";
-    ctx.fillRect(
-      this.canvas.width / 2 - 220,
-      this.canvas.height / 2 - 120,
-      440,
-      240
-    );
+    ctx.fillRect(this.canvas.width / 2 - 220, this.canvas.height / 2 - 120, 440, 240);
 
     ctx.fillStyle = "#ffffff";
     ctx.font = "36px monospace";
