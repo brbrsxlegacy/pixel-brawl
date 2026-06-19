@@ -19,6 +19,9 @@ export class Player {
     this.maxSpeed = 7;
     this.jumpPower = -15;
 
+    this.stocks = 3;
+    this.dead = false;
+
     this.onGround = false;
     this.direction = 1;
 
@@ -59,6 +62,14 @@ export class Player {
     }
   
     return false;
+  }
+
+  respawn(x, y) {
+    this.x = x;
+    this.y = y;
+    this.vx = 0;
+    this.vy = 0;
+    this.damage = 0;
   }
 
   attack() {
