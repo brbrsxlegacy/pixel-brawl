@@ -6,7 +6,7 @@ export class Renderer {
     this.resize();
     window.addEventListener("resize", () => this.resize());
   }
-
+}
   resize() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
